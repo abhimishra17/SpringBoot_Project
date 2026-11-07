@@ -1,0 +1,13 @@
+package com.abhimishra17.rest_demo;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class RestDemoApplication {
+
+    public static void main(String[] args) {
+        // test Comment
+        SpringApplication.run(RestDemoApplication.class, args);
+    }
+}
