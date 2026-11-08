@@ -2,6 +2,7 @@ package com.abhimishra17.rest_demo.controller;
 
 import com.abhimishra17.rest_demo.model.CloudVendor;
 import com.abhimishra17.rest_demo.service.CloudVendorService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/cloudvendor")
 public class CloudAPIService {
 

@@ -1,3 +1,7 @@
 target/
 .idea/
 .DS_Store
+frontend-vendors/node_modules/
+frontend-vendors/dist/
+frontend-sellers/node_modules/
+frontend-sellers/dist/
