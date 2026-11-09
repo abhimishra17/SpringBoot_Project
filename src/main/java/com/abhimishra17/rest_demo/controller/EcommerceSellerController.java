@@ -63,4 +63,9 @@ public class EcommerceSellerController {
     public String deletePlatformFromSeller(@PathVariable Long sellerId, @PathVariable Long platformId) {
         return ecommerceSellerService.deletePlatformFromSeller(sellerId, platformId);
     }
+
+   @GetMapping("/{sellerId}/total-orders")
+    public Long getTotalOrdersForSellerInMonth(@PathVariable Long sellerId){
+        return ecommerceSellerService.getTotalOrderForSeller(sellerId);
+   }
 }

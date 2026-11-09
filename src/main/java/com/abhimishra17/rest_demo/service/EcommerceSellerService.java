@@ -103,4 +103,10 @@ public class EcommerceSellerService {
         seller.addPlatform(new SellerPlatform("Ajio", "ajio.com/seller/" + cleanFirm, "Pending", null, "Ajio B2B", 0));
         seller.addPlatform(new SellerPlatform("Own Website (Shopify)", "www." + cleanFirm.replace("-", "") + ".com", "Active", 4.8, "Shiprocket / Delhivery", 195));
     }
+
+
+    public Long getTotalOrderForSeller(Long sellerId){
+        return platformRepository.getTotalMonthlyOrdersBySellerId(sellerId);
+
+    }
 }
