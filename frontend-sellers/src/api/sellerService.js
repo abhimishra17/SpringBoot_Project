@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const API_URL = '/ecommerce-seller';
 
+
 export const sellerService = {
   // Get all sellers
   async getAllSellers() {
@@ -43,6 +44,16 @@ export const sellerService = {
   async deletePlatform(sellerId, platformId) {
     const response = await axios.delete(`${API_URL}/${sellerId}/platforms/${platformId}`);
     return response.data;
+  },
+
+  // Get total monthly orders count across all platforms
+  async getTotalOrders(sellerId) {
+    const response = await axios.get(`${API_URL}/${sellerId}/total-orders`);
+    return response.data;
+  },
+
+  async getTotalOders(sellerId) {
+    return this.getTotalOrders(sellerId);
   },
 };
 
