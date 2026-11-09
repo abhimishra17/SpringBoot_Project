@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
+import { sellerService } from '../../api/sellerService';
 
 export default function PlatformsTab({ seller, onAddPlatform, onDeletePlatform }) {
   const [showAddForm, setShowAddForm] = useState(false);
+  const [totalOrders, setTotalOrders] = useState(null);
+  const [showTotalModal, setShowTotalModal] = useState(false);
+  const [loadingTotal, setLoadingTotal] = useState(false);
   const [platformForm, setPlatformForm] = useState({
     platformName: 'Amazon India',
     storeUrl: '',
@@ -32,6 +36,20 @@ export default function PlatformsTab({ seller, onAddPlatform, onDeletePlatform }
     });
   };
 
+  const calTotalOrder = async () => {
+    try {
+      setLoadingTotal(true);
+      const total = await sellerService.getTotalOrders(seller.sellerId);
+      setTotalOrders(total ?? 0);
+      setShowTotalModal(true);
+    } catch (err) {
+      console.error('Failed to calculate total orders:', err);
+      alert('Failed to calculate total orders. Please make sure the backend is running.');
+    } finally {
+      setLoadingTotal(false);
+    }
+  };
+
   const platforms = seller?.platforms || [];
 
   return (
@@ -43,9 +61,24 @@ export default function PlatformsTab({ seller, onAddPlatform, onDeletePlatform }
             Where {seller.sellerFirmName} lists and sells products online
           </span>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowAddForm(!showAddForm)}>
-          {showAddForm ? 'Close Form' : '+ Add Platform'}
-        </button>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={calTotalOrder}
+            disabled={loadingTotal}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
+            {loadingTotal ? '⏳ Calculating...' : '📊 Calculate Total Orders'}
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => setShowAddForm(!showAddForm)}
+          >
+            {showAddForm ? 'Close Form' : '+ Add Platform'}
+          </button>
+        </div>
       </div>
 
       {/* Add Platform Form */}
@@ -188,6 +221,92 @@ export default function PlatformsTab({ seller, onAddPlatform, onDeletePlatform }
             ))}
           </tbody>
         </table>
+      )}
+      {/* Total Orders Popup Fragment / Modal */}
+      {showTotalModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.55)',
+            backdropFilter: 'blur(3px)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 9999,
+            padding: '16px'
+          }}
+          onClick={() => setShowTotalModal(false)}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '16px',
+              padding: '28px',
+              maxWidth: '420px',
+              width: '100%',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              textAlign: 'center'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '50%',
+              background: '#ecfdf5',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '28px',
+              margin: '0 auto 16px'
+            }}>
+              📦
+            </div>
+
+            <h3 style={{ margin: '0 0 6px 0', fontSize: '20px', color: '#0f172a' }}>
+              Total Monthly Orders
+            </h3>
+            <p style={{ margin: '0 0 20px 0', fontSize: '13px', color: '#64748b' }}>
+              Combined volume across all channels for <strong>{seller.sellerFirmName}</strong>
+            </p>
+
+            <div style={{
+              background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+              border: '2px dashed #86efac',
+              borderRadius: '12px',
+              padding: '20px',
+              marginBottom: '20px'
+            }}>
+              <div style={{ fontSize: '44px', fontWeight: '800', color: '#15803d', lineHeight: 1 }}>
+                {Number(totalOrders).toLocaleString()}
+              </div>
+              <div style={{ fontSize: '12px', fontWeight: '700', color: '#166534', marginTop: '6px', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
+                Orders / Month
+              </div>
+            </div>
+
+            <div style={{
+              fontSize: '12px',
+              color: '#64748b',
+              marginBottom: '20px',
+              background: '#f8fafc',
+              padding: '10px',
+              borderRadius: '8px'
+            }}>
+              Calculated across <strong>{platforms.length}</strong> integrated channel{platforms.length === 1 ? '' : 's'} via Spring Boot.
+            </div>
+
+            <button
+              type="button"
+              className="btn btn-primary"
+              style={{ width: '100%', padding: '10px 0', fontSize: '14px', borderRadius: '8px' }}
+              onClick={() => setShowTotalModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
