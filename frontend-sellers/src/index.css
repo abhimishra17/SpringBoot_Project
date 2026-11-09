@@ -225,3 +225,77 @@ body {
   padding: 30px;
   font-style: italic;
 }
+
+/* Detail Page Header & Tabs */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.tabs-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #cbd5e1;
+  padding-bottom: 8px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: white;
+  color: #475569;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.tab-btn:hover {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.tab-btn.active {
+  background: #059669;
+  color: white;
+}
+
+/* Info Grid Layout */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.info-item {
+  background: #f8fafc;
+  padding: 14px 18px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+}
+
+.info-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: 0.03em;
+}
+
+.info-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e293b;
+}
