@@ -10,6 +10,7 @@ export default function App() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
 
   const [formData, setFormData] = useState({
     sellerName: '',
@@ -114,13 +115,23 @@ export default function App() {
   // Filter sellers based on search term
   const filteredSellers = sellers.filter((seller) => {
     const term = searchTerm.toLowerCase();
-    return (
+    const matchesSearch = (
       (seller.sellerName && seller.sellerName.toLowerCase().includes(term)) ||
       (seller.sellerFirmName && seller.sellerFirmName.toLowerCase().includes(term)) ||
       (seller.sellerEmail && seller.sellerEmail.toLowerCase().includes(term)) ||
       (seller.sellerPhoneNo && seller.sellerPhoneNo.toLowerCase().includes(term)) ||
       (seller.sellerAddress && seller.sellerAddress.toLowerCase().includes(term))
     );
+
+    let matchesStatus = true;
+    if (statusFilter === 'ACTIVE') {
+      matchesStatus = seller.sellerStatus === true;
+    }
+    else if (statusFilter === 'INACTIVE') {
+      matchesStatus = seller.sellerStatus === false;
+    }
+
+    return matchesStatus && matchesSearch;
   });
 
   return (
@@ -140,6 +151,13 @@ export default function App() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+          <select className='search-input' style={{ minWidth: '130px', cursor: 'pointer' }}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}>
+            <option value="ALL">ALL STATUS</option>
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="INACTIVE">INACTIVE</option>
+          </select>
           <button className="btn btn-primary" onClick={handleOpenCreate}>
             + Create Seller
           </button>
