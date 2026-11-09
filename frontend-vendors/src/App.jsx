@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './index.css';
 
-// Base URL proxied to http://localhost:8080/cloudvendor
+// Base URL proxied to http://127.0.0.1:8080/cloudvendor
 const API_URL = '/cloudvendor';
 
 export default function App() {
   const [vendors, setVendors] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null); // null when creating, vendorId when editing
+  const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [formData, setFormData] = useState({
     vendorName: '',
@@ -34,7 +35,7 @@ export default function App() {
     loadVendors();
   }, []);
 
-  // 2. Handle form input change
+  // 2. Handle input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -61,12 +62,12 @@ export default function App() {
   const handleOpenEdit = (vendor) => {
     setEditingId(vendor.vendorId);
     setFormData({
-      vendorName: vendor.vendorName,
-      vendorAge: vendor.vendorAge,
-      vendorGender: vendor.vendorGender,
-      vendorCategory: vendor.vendorCategory,
-      vendorPhoneNo: vendor.vendorPhoneNo,
-      vendorAddress: vendor.vendorAddress,
+      vendorName: vendor.vendorName || '',
+      vendorAge: vendor.vendorAge || '',
+      vendorGender: vendor.vendorGender || 'Male',
+      vendorCategory: vendor.vendorCategory || '',
+      vendorPhoneNo: vendor.vendorPhoneNo || '',
+      vendorAddress: vendor.vendorAddress || '',
     });
     setShowForm(true);
   };
@@ -75,9 +76,8 @@ export default function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic age validation matching backend
     if (parseInt(formData.vendorAge, 10) < 18) {
-      alert('Vendor age must be at least 18');
+      alert('Vendor age must be at least 18 (backend validation requirement)');
       return;
     }
 
@@ -92,7 +92,6 @@ export default function App() {
         alert(response.data || 'Vendor created successfully!');
       }
 
-      // Close form and refresh list
       setShowForm(false);
       setEditingId(null);
       loadVendors();
@@ -117,20 +116,44 @@ export default function App() {
     }
   };
 
+  // Filter vendors based on search term
+  const filteredVendors = vendors.filter((vendor) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      (vendor.vendorName && vendor.vendorName.toLowerCase().includes(term)) ||
+      (vendor.vendorCategory && vendor.vendorCategory.toLowerCase().includes(term)) ||
+      (vendor.vendorPhoneNo && vendor.vendorPhoneNo.toLowerCase().includes(term)) ||
+      (vendor.vendorAddress && vendor.vendorAddress.toLowerCase().includes(term))
+    );
+  });
+
   return (
     <div className="container">
-      {/* HEADER with Create Button */}
+      {/* HEADER with Search & Create Button */}
       <header className="header">
-        <h1>Cloud Vendor Management</h1>
-        <button className="btn btn-primary" onClick={handleOpenCreate}>
-          + Create Vendor
-        </button>
+        <div>
+          <h1>Cloud Vendor Portal</h1>
+          <span className="subtitle">Running on Port 5173 • Spring Boot API Connected</span>
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search vendors..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <button className="btn btn-primary" onClick={handleOpenCreate}>
+            + Create Vendor
+          </button>
+        </div>
       </header>
 
-      {/* CREATE / EDIT FORM (Only shows when showForm is true) */}
+      {/* CREATE / EDIT FORM */}
       {showForm && (
         <div className="form-card">
-          <h2>{editingId ? `Edit Vendor #${editingId}` : 'Create New Vendor'}</h2>
+          <h2>{editingId ? `Edit Vendor #${editingId}` : 'Create New Cloud Vendor'}</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-row">
               <div className="form-field">
@@ -140,7 +163,7 @@ export default function App() {
                   name="vendorName"
                   value={formData.vendorName}
                   onChange={handleChange}
-                  placeholder="e.g. Amazon Cloud"
+                  placeholder="e.g. Amazon Cloud Services"
                   required
                 />
               </div>
@@ -164,6 +187,7 @@ export default function App() {
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                   <option value="Other">Other</option>
+                  <option value="Corporate">Corporate</option>
                 </select>
               </div>
             </div>
@@ -176,7 +200,7 @@ export default function App() {
                   name="vendorCategory"
                   value={formData.vendorCategory}
                   onChange={handleChange}
-                  placeholder="e.g. Cloud Services"
+                  placeholder="e.g. Cloud Storage, DevOps, DBaaS"
                   required
                 />
               </div>
@@ -218,12 +242,14 @@ export default function App() {
         </div>
       )}
 
-      {/* VENDOR LIST TABLE */}
+      {/* VENDORS TABLE */}
       <div className="table-card">
-        <h2>All Vendors ({vendors.length})</h2>
+        <h2>All Cloud Vendors ({filteredVendors.length})</h2>
 
-        {vendors.length === 0 ? (
-          <p className="no-data">No vendors found. Click "+ Create Vendor" to add one!</p>
+        {filteredVendors.length === 0 ? (
+          <p className="no-data">
+            {searchTerm ? `No vendors match "${searchTerm}"` : 'No vendors found. Click "+ Create Vendor" to add one!'}
+          </p>
         ) : (
           <table className="vendor-table">
             <thead>
@@ -239,11 +265,11 @@ export default function App() {
               </tr>
             </thead>
             <tbody>
-              {vendors.map((vendor) => (
+              {filteredVendors.map((vendor) => (
                 <tr key={vendor.vendorId}>
                   <td>#{vendor.vendorId}</td>
                   <td className="bold">{vendor.vendorName}</td>
-                  <td>{vendor.vendorAge}</td>
+                  <td>{vendor.vendorAge} yrs</td>
                   <td>{vendor.vendorGender}</td>
                   <td>
                     <span className="badge">{vendor.vendorCategory}</span>

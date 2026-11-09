@@ -1,56 +1,59 @@
-# Cloud Vendor Management System (Fullstack)
+# Spring Boot Multi-Frontend Fullstack System
 
-Fullstack application with a Spring Boot REST API backend and a modern React frontend for managing Cloud Vendors.
+This project contains a **shared Spring Boot REST API backend** that powers **two independent React frontends**.
 
 ---
 
 ## 🏗️ Architecture
 
-- **Backend**: Spring Boot 3.4 (Java 17, Spring Data JPA, MySQL / H2)
-  - REST endpoints at `/cloudvendor`
-  - CORS support enabled (`@CrossOrigin`)
-- **Frontend**: React 18 + Vite (`SpringBoot_Project/frontend/`)
-  - Axios REST client with Vite reverse proxy
-  - Lucide icons, responsive data table & card views
-  - Search, category & gender filters, sorting, CSV export, and pagination
-  - Create, Update, Delete modals with real-time validation
+```text
+                  ┌──────────────────────────────────────────────┐
+                  │       Spring Boot Backend (Port 8080)        │
+                  │  ├── /cloudvendor       (Vendor REST API)    │
+                  │  └── /ecommerce-seller  (Seller REST API)    │
+                  └──────────────────────┬───────────────────────┘
+                                         │
+                    ┌────────────────────┴────────────────────┐
+                    ▼                                         ▼
+┌───────────────────────────────────────┐ ┌───────────────────────────────────────┐
+│     frontend-vendors/ (Port 5173)     │ │     frontend-sellers/ (Port 5174)     │
+│   Dedicated Cloud Vendor Portal       │ │   Dedicated E-commerce Seller Portal  │
+└───────────────────────────────────────┘ └───────────────────────────────────────┘
+```
 
 ---
 
-## 🚀 Running the Application
+## 🚀 Running the Applications
 
-### 1. Start the Spring Boot Backend (Port 8080)
-
-Requires Java 17+ and Maven:
-
+### 1. Start the Shared Backend (Port 8080)
 ```bash
 cd SpringBoot_Project
 mvn spring-boot:run
 ```
 
-The backend starts at `http://localhost:8080`.
-
-### 2. Start the React Frontend (Port 5173)
-
+### 2. Start Frontend 1: Cloud Vendor Portal (Port 5173)
 In a separate terminal:
-
 ```bash
-cd SpringBoot_Project/frontend
-npm install
+cd SpringBoot_Project/frontend-vendors
 npm run dev
 ```
+👉 Open **http://localhost:5173**
 
-Open your browser at:
-👉 **`http://localhost:5173`**
+### 3. Start Frontend 2: E-commerce Seller Portal (Port 5174)
+In a separate terminal:
+```bash
+cd SpringBoot_Project/frontend-sellers
+npm run dev
+```
+👉 Open **http://localhost:5174**
 
 ---
 
-## 🔌 REST API Endpoints
+## 🔌 API Endpoints Reference
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/cloudvendor` | Retrieve all cloud vendors |
-| `GET` | `/cloudvendor/{vendorId}` | Retrieve a specific vendor by ID |
-| `POST` | `/cloudvendor` | Create a new vendor (validates age $\ge 18$, all fields required) |
-| `PUT` | `/cloudvendor/{vendorId}` | Update an existing vendor's details |
-| `DELETE` | `/cloudvendor/{vendorId}` | Delete a vendor by ID |
+| Service | Port | Endpoint | Description |
+|---|---|---|---|
+| **Spring Boot Backend** | `8080` | `/cloudvendor` | Vendor CRUD API |
+| **Spring Boot Backend** | `8080` | `/ecommerce-seller` | Seller CRUD API |
+| **Frontend Vendors** | `5173` | `/` | UI for Cloud Vendors |
+| **Frontend Sellers** | `5174` | `/` | UI for E-commerce Sellers |
